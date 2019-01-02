@@ -1,0 +1,23 @@
+---
+attack_technique: T1009
+display_name: Binary Padding
+
+atomic_tests:
+- name: Pad Binary to Change Hash - Linux/macOS dd
+  description: |
+    Uses dd to add a zero to the binary to change the hash
+
+  supported_platforms:
+    - macos
+    - linux
+  input_arguments:
+    binary_to_pad:
+      description: Path of binary to be padded
+      type: Path
+      default: /tmp/EvilBinary
+  executor:
+    name: sh
+    command: |
+      md5sum #{binary_to_pad}
+      dd if=/dev/zero bs=1 count=1 >> #{binary_to_pad}
+      md5sum #{binary_to_pad}

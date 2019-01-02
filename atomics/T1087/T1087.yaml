@@ -1,11 +1,11 @@
----
+--- 
 attack_technique: T1087
-display_name: Account Discovery
+display_name: Account Discovery 
 
 atomic_tests:
-- name: List all accounts
+- name: Enumerate all accounts
   description: |
-    xxx
+    Enumerate all accounts by copying /etc/passwd to another file
   supported_platforms:
     - linux
     - macos
@@ -37,7 +37,7 @@ atomic_tests:
 
 - name: View accounts with UID 0
   description: |
-    xxx
+    View accounts wtih UID 0
   supported_platforms:
     - linux
     - macos
@@ -49,11 +49,9 @@ atomic_tests:
   executor:
     name: sh
     command: |
-      grep 'x:0:' /etc/passwd > #{output_file}
-
-- name: List opened files by user
+      grep 'x:0:' /etc/passwd > #{output_file} - name: List opened files by user
   description: |
-    xxx
+    List opened files by user
   supported_platforms:
     - linux
     - macos
@@ -64,7 +62,7 @@ atomic_tests:
 
 - name: Show if a user account has ever logger in remotely
   description: |
-    xxx
+    Show if a user account has ever logger in remotely
   supported_platforms:
     - linux
     - macos
@@ -78,9 +76,9 @@ atomic_tests:
     command: |
       lastlog > #{output_file}
 
-- name: Enumerate Groups and users
+- name: Enumerate users and groups
   description: |
-    utilize local utilities to identify users and groups
+    Utilize groups and id to enumerate users and groups
   supported_platforms:
     - linux
     - macos
@@ -90,8 +88,73 @@ atomic_tests:
     command: |
       groups
       id
+
+- name: Enumerate users and groups
+  description: |
+    Utilize local utilities to enumerate users and groups
+  supported_platforms:
+    - macos
+
+  executor:
+    name: sh
+    command: |
       dscl . list /Groups
       dscl . list /Users
       dscl . list /Users | grep -v '_'
       dscacheutil -q group
       dscacheutil -q user
+
+- name: Enumerate all accounts
+  description: |
+    Enumerate all accounts
+  supported_platforms:
+    - windows
+  executor:
+    name: command_prompt
+    command: |
+      net user
+      net user /domain
+      dir c:\Users\
+      cmdkey.exe /list
+      net localgroup "Users"
+      net localgroup
+
+- name: Enumerate all accounts via PowerShell
+  description: |
+    Enumerate all accounts via PowerShell
+  supported_platforms:
+    - windows
+  executor:
+    name: powershell
+    command: |
+      net user
+      net user /domain
+      get-localuser
+      get-localgroupmembers -group Users
+      cmdkey.exe /list
+      ls C:/Users
+      get-childitem C:\Users\
+      dir C:\Users\
+      get-aduser -filter *
+      get-localgroup
+      net localgroup
+
+- name: Enumerate logged on users
+  description: |
+    Enumerate logged on users
+  supported_platforms:
+    - windows
+  executor:
+    name: command_prompt
+    command: |
+      query user
+
+- name: Enumerate logged on users via PowerShell
+  description: |
+    Enumerate logged on users via PowerShell
+  supported_platforms:
+    - windows
+  executor:
+    name: powershell
+    command: |
+      query user
